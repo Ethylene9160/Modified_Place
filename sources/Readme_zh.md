@@ -6,7 +6,7 @@
 
 ![Static lc](https://img.shields.io/badge/Linear-Control-red)
 
-将语言切换到：[English](../Readme.md)
+将语言切换到：[English](../README.md)
 
 **项目结构**
 
@@ -17,8 +17,8 @@
 ├─sources
 │  ├─Readme_zh.md
 └─src
-    ├─cpp
-    └─matlab
+   ├─cpp
+   └─matlab
 ```
 
 ## 简介
