@@ -13,15 +13,18 @@
 │  LICENSE
 │  README.md
 ├─sources
-│  ├─Readme_zh.md
+│	└─Readme_zh.md
 └─src
-   ├─cpp
-   └─matlab
+	├─cpp
+	└─matlab
+   		├─myPoleSISOPlacement.m
+   		├─test_samples.mlx
+   		└─untitled.mlx
 ```
 
 ## 简介
 
-这是SDM364线性系统控制课程的第二个课程项目，作者将会在matlab中重写place函数，并基于c++为其添加部分功能。
+这是*SDM364线性系统控制*课程的第二个课程项目，作者将会在matlab中重写place函数，并基于c++为其添加部分功能。
 
 在使用这个仓库前，请保证您满足以下条件：
 
@@ -84,7 +87,7 @@ function [T, A_c, B_c, A_uc, B_uc] = controllabilityDecomposition(A, B)
         T = independent_cols;
     end
     
-    % 检测T是否奇异
+    % 检测T是否奇异（大概率不会）
     if rank(T) < size(A,1)
         error('Transformation matrix T is singular. The system may not be controllable.');
     end
@@ -104,3 +107,31 @@ function [T, A_c, B_c, A_uc, B_uc] = controllabilityDecomposition(A, B)
 end
 ```
 
+完成分解后，我们使用$A_{11}~B_{11}$作为能控的部分，这样能够求出一个维度是$r$的$K_{ccf}$。然后我们在$K_{ccf}$后补零直到$K_{ccf}$的维度变为$n$。将它当作普通的$K_{ccf}$与转换矩阵的逆进行右乘，就能得到：
+$$
+K = K_{CCF}T^{-1}
+$$
+
+## 优势
+
+经过重写的函数，相对于原有的`place`函数，具有以下优势：
+
+### 非可控性能控矩阵的极点放置
+
+matlab中内置的`place`函数不支持不可控能控矩阵对的输入，经过覆写的函数通过对能控矩阵进行分解，实现了非可控的能控矩阵极点放置。
+
+### 不再对几何重数进行限制
+
+matlab中内置的`place`函数限制了极点的几何重数。如果极点矩阵的几何重数大于能控矩阵的几何重数，该函数将不会工作。经过覆写的函数通过使用传统公式分解法，没有几何重数的条件限制。
+
+## 劣势
+
+### 速度性能的下降
+
+大多数运算都是在matlab中进行的，而不是像`c`或`cpp`这样的底层计算语言，这限制了计算速度。
+
+# 更新日志
+
+> 24/1/1.16:33：完成基本的SISO可控系统。
+>
+> 24/1/1.19:55：完成SISO与不可控系统——使用可控性分解。

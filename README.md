@@ -13,21 +13,24 @@ Switch language to: [中文](sources/Readme_zh.md)
 │  LICENSE
 │  README.md
 ├─sources
-│  ├─Readme_zh.md
+│	└─Readme_zh.md
 └─src
-   ├─cpp
-   └─matlab
+	├─cpp
+	└─matlab
+   		├─myPoleSISOPlacement.m
+   		├─test_samples.mlx
+   		└─untitled.mlx
 ```
 
 ## Introduction
 
-A second project of SDM364, using matlab while basing on cpp.
+A second project of *SDM364, Multi-variable Control and Applications*, using matlab while basing on cpp to enhance the function `place(A,B,poles)` in matlab.
 
 Before applying this repo, make sure that you're able to access:
 
 > c++ version: standard 11
 >
-> matlab: 2022a
+> matlab: R2022a(or replacement)
 
 ## Methods
 
@@ -48,9 +51,7 @@ B_{11}\\0
 $$
 In this case, we need to find the transformation matrix $T$.
 
-When we decompose the controllability matrix, we know that, $A=T^{-1}\Lambda T$, with $\Lambda$
-
-a diagnal matrix. If the matrix is not controllable, obviously there is no such matrix $\Lambda$, But we can decompose it into a Jordan lower triangular matrix by some means.
+When we decompose the controllability matrix, we know that, $A=T^{-1}\Lambda T$, with $\Lambda$ a diagnal matrix. If the matrix is not controllable, obviously there is no such matrix $\Lambda$, But we can decompose it into a Jordan lower triangular matrix by some means.
 
 Calculate $M_c$, which is not full rank(assume $r<n$) that is uninvertable. Thus, we can extract the linearly independent $r$ columns in $M_c$,  then padded to the first $r$ column of $T$.
 
@@ -82,7 +83,7 @@ function [T, A_c, B_c, A_uc, B_uc] = controllabilityDecomposition(A, B)
         T = independent_cols;
     end
     
-    % Verify that T is full rank (non-singular)
+    % Verify that T is full rank (mostly it is full rank)
     if rank(T) < size(A,1)
         error('Transformation matrix T is singular. The system may not be controllable.');
     end
@@ -102,7 +103,21 @@ function [T, A_c, B_c, A_uc, B_uc] = controllabilityDecomposition(A, B)
 end
 ```
 
+## preponderance
 
+### Pole placement for uncontrollable performance control matrices
+
+The built-in  function `place` in matlab does not support the input of uncontrollable controllability matrix pairs. The modified function realizes the pole placement of uncontrollable controllability matrix by decomposing the controllability matrix.
+
+### No more restrictions on geometric multiplicity
+
+The built-in  function `place` in matlab limits the geometric multiplicity of the poles. If the geometric multiplicity of the pole matrix is greater than the geometric multiplicity of the controllability matrix, the function will not work. By using the traditional formula decomposition method, the overwritten function does not have the condition restriction of geometric multiplicity.
+
+## shortcomes
+
+# Lower speed
+
+Most operations are operated in matlab rather than lower-level computitional languages like `c` or `cpp`, which restricts the speed of calculating process.
 
 # Update logs
 
