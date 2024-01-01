@@ -1,9 +1,7 @@
 # Modified `place` in matlab
 
 ![Static matlab](https://img.shields.io/badge/matlab-2022a-green)
-
 ![Static cpp](https://img.shields.io/badge/c++-11-blue)
-
 ![Static lc](https://img.shields.io/badge/Linear-Control-red)
 
 Switch language to: [中文](sources/Readme_zh.md)

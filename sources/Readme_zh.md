@@ -1,9 +1,7 @@
 # 覆写`place`函数-matlab
 
 ![Static matlab](https://img.shields.io/badge/matlab-2022a-green)
-
 ![Static cpp](https://img.shields.io/badge/c++-11-blue)
-
 ![Static lc](https://img.shields.io/badge/Linear-Control-red)
 
 将语言切换到：[English](../README.md)
