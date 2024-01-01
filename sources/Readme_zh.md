@@ -62,45 +62,45 @@ $$
 
 ```matlab
 function [T, A_c, B_c, A_uc, B_uc] = controllabilityDecomposition(A, B)
-    % Calculate the controllability matrix
+    % 能控矩阵
     C = ctrb(A, B);
     
-    % Determine the rank of the controllability matrix
+    % 确定可控性矩阵的秩
     rankC = rank(C);
     
-    % Select rankC independent columns from C
+    % 从C中选择rankC独立列
     [U, S, V] = svd(C, 'econ');
     independent_cols = V(:, 1:rankC);
     
-    % Ensure we have a full set of basis vectors for the state space
-    % If system is not fully controllable, complete the basis.
+    % 确保我们有状态空间的一整套基向量。
+    % 如果系统不完全可控，则需要手动计算转换矩阵。
     if rankC < size(A,1)
-        % Add additional vectors to span the entire space
-        % Find the null space of the controllability matrix
+        % 添加额外的向量来张成整个空间
+        % 找到可控性矩阵的左零空间
         null_vectors = null(C');
         
-        % Construct T by combining the independent columns and the null space
+        % 通过合并独立列和左零空间来构造T
         T = [independent_cols, null_vectors];
     else
-        % System is fully controllable
+        % 若系统本来可控
         T = independent_cols;
     end
     
-    % Verify that T is full rank (non-singular)
+    % 检测T是否奇异
     if rank(T) < size(A,1)
         error('Transformation matrix T is singular. The system may not be controllable.');
     end
     
-    % Transform the system matrices
+    % 变换系统矩阵
     T_inv = inv(T);
     A_tilde = T_inv * A * T;
     B_tilde = T_inv * B;
     
-    % Extract the submatrices for the controllable part
+    % 提取可控部分的子矩阵
     A_c = A_tilde(1:rankC, 1:rankC);
     B_c = B_tilde(1:rankC, :);
     
-    % Extract the submatrices for the uncontrollable part, if any
+    % 如果有，提取不可控部分的子矩阵
     A_uc = A_tilde(rankC+1:end, rankC+1:end);
     B_uc = B_tilde(rankC+1:end, :);
 end
