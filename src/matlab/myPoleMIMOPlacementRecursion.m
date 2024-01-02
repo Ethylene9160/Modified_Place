@@ -1,24 +1,28 @@
-% Just a beta version!
 function K = myPoleMIMOPlacementRecursion(A,B,P)
     if size(B,2) == 1
+        disp("final task!")
         K = myPoleSISOPlacement(A,B,P)
     else
+        disp("current input B is:")
         disp(B)
         if size(B,2) == 1
-            Bi = B
+            Bi = B;
         else
-            Bi = B(:,1:1)
+            Bi = B(:,1:1);
         end
-        [T, A_c, B_c, A_uc, B_uc] = controllabilityDecomposition(A,Bi)
+        [T, A_c, B_c, A_uc, B_uc] = controllabilityDecomposition(A,Bi);
+        disp("size of A_c is:")
         r = size(A_c, 1)
         if r ~= 0
             K_up = myPoleSISOPlacement(A_c, B_c, P(1:r))
         else
             K_up=[]
         end
-        A = A_uc
+        A = A_uc;
         %B = B_uc(:,2:end)
+        B = inv(T)*B;
         B = B(r+1:end,2:end);
+        % todo: vertify P.
         P = P(r+1:end);
         r;
         s = size(A,1);
@@ -26,7 +30,7 @@ function K = myPoleMIMOPlacementRecursion(A,B,P)
             str = "over!"
             %k_up_size= size(K_up,2)
             %K = [K_up;zeros(1,size(K_up,2))]
-            K_up = [K_up;zeros(1,size(K_up,2))]
+            K_up = [K_up;zeros(1,size(K_up,2))];
             K = K_up*inv(T)
             
         else
