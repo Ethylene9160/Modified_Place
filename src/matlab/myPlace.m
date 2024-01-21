@@ -12,11 +12,16 @@ function K = myPlace(A,B,P)
         T_inv = inv(T);
         K = K_t*T_inv;
     end
+    sizek = size(K,1);
+    if sizek < size(B,2)
+        K = [K;zeros(size(B,2)-sizek, size(K,2))];
+    end
 end
 
 function K = myPoleMIMOPlacementRecursion(A,B,P)
     if size(B,2) == 1
         %disp("final task!");
+        
         K = myPoleSISOPlacement(A,B,P);
     else
         %disp("current input B is:");
@@ -26,7 +31,8 @@ function K = myPoleMIMOPlacementRecursion(A,B,P)
         else
             Bi = B(:,1:1);
         end
-        [T, A_c, B_c, A_uc, B_uc] = controllabilityDecomposition(A,Bi);
+        [T, A_c, B_c, A_uc, B_uc] = controllabilityMIMODecomposition(A,Bi);
+        
         %disp("size of A_c is:");
         r = size(A_c, 1);
         if r ~= 0
@@ -176,7 +182,11 @@ function [T, A_c, B_c, A_uc, B_uc] = controllabilityMIMODecomposition(A, B)
     % find the leftNullSpace.
     N = null(V');
     % add left zerospace to the V to construct a square matrix.
-    T = [V, N];
+    if size(N,1) ~= size(N,2)
+        T = [V, N];
+    else
+        T = N;
+    end
     T_inv = inv(T);
     A_new = T_inv*A*T;
     B_new = T_inv*B;
@@ -197,6 +207,7 @@ function K = myBasePolePlacement(A, B, poles)
     K_ccf = K_ccf(end:-1:2);
     % perfect test!
     P_ccf_inv = zeros(n,n);
+    % assign Pccf^-1
     for i=1:n-1
         for j = 1:n-i
             P_ccf_inv(i,j)=originalPoly(n-i-j+2);
