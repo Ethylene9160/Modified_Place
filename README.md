@@ -6,7 +6,7 @@
 
 Switch language to: [中文](sources/Readme_zh.md)
 
-**Project Structure**
+**Project Structure** (major part)
 
 ```bash
 │  .gitignore
@@ -14,12 +14,16 @@ Switch language to: [中文](sources/Readme_zh.md)
 │  README.md
 ├─sources
 │	└─Readme_zh.md
+├─doc
+│	└─doc.md
 └─src
 	├─cpp
 	└─matlab
-   		├─myPoleSISOPlacement.m
-   		├─test_samples.mlx
-   		└─untitled.mlx
+   		├─myPlace.m
+   		├─myOrderedPlace.m
+   		├─myRandomPlace.m
+   		├─myAdvancedRandomPlace.m
+   		└─test_samples.mlx
 ```
 
 ## Introduction
@@ -36,7 +40,9 @@ Before applying this repo, make sure that you're able to access:
 
 ### Controllable SISO Systems
 
-pass.
+Based on **Bass-Gura Formula**. 
+
+Pass.
 
 ### Uncontrollable SISO Systems
 
@@ -170,6 +176,44 @@ And if  $\begin{bmatrix}A_{22}~|~B_2\end{bmatrix}$ is **uncontrollable**, we can
 
 The author use recursion to realize this.
 
+### Multiple Solutions
+
+For a given piar $(A,B,P)$, letting $T_B$ a non-singular matrix.
+
+Derive:
+$$
+B' = BT_B
+$$
+This means, $B'$ is a new column combination of $B$. And let's place pair $(A,B',P)$, assuming what we get is $K'$, and the new state matrix will be: 
+$$
+A-B'K'\\
+=A-(BT_B)\cdot K'\\
+=A-B\cdot (T_BK')
+$$
+Thus, we know, using any non-singular matrix $T_B$, to drive column transform on $B$, and apply row transform of $T_B$ on the obtained $K'$, can we get $K$, That is:
+$$
+K= T_BK'
+$$
+That is to say, to find non-singular $T_B$, can get different answers.
+
+However, we're facing 2 problems. The one is that, if we randomly construct a new linear combination of $B$, for $(A,B)$ is controllable, we're easy to see, using the previous methods the first column of $B$ is quite easy to make $(A,b_1)$ controllable, and so we only get a certain series of the solution. So we're going to construct new combination of $B$ in a random but not that random way.
+
+One way is to make simple column exchange. For example, the folloing matrix $T_B$, and $B\cdot T_B$ represents exchanging the first and the second column of matrix $B$:
+$$
+T_B = \begin{bmatrix}
+0~~1~~0\\
+1~~0~~0\\
+0~~0~~1
+\end{bmatrix}
+$$
+Then we can get a new set of our pole place. Based on this, function `myOrderedPlace(A,B,P,order)` is to make simple combination of matrix $B$, and get new solution set of $K$.
+
+Another way is to make combination in a more complex way. The experimenter use a sercial algorithm to realize such result:
+$$
+b_i\leftarrow c_1b_1+c_2b_2+...
+$$
+with $c_i$ either a zero, or a random number in $(0,1)$, The probability of zero is given a certain proportion, and the remaining probability is assigned to a random number between $(0,1)$， to reduce the phenomenon of the apprance of controllable $(A,b_1)$. And finally process it, we get the pole placement feedback matrix $K$
+
 ## preponderance
 
 ### Pole placement for uncontrollable performance control matrices
@@ -191,16 +235,26 @@ Most operations are operated in matlab rather than lower-level computitional lan
 > 1 Joint uncontrollable part together with all-zero part.(fixed)
 >
 > 2 Judge dimension of each controllable part. For example, if $A_c$ is $0\times 0$, we need to do other operations.(fixed)
+>
+> 3 For the uncontrollable multi-input matrix, the strategy should be changed to: first, the matrix was split into a controllable part and an uncontrollable part, and then only the controllable part was placed with poles. I'm going to put this part right here in K and I'm going to zero it out, and then I'm going to go back and transform it.(done)
 
 # Update logs
 
-> 24/1/1.16:33: finished basic SISO with controllable system.
+> 24/1/1.  16:33: finished basic SISO with controllable system.
 >
-> 24/1/1.19:55: finished SISO with un-controllable system, using controllibility decomposition.
+> 24/1/1.  19:55: finished SISO with un-controllable system, using controllibility decomposition.
 >
-> 24/1/2.15:29: finished basic MIMO sisytems.
+> 24/1/2.  15:29: finished basic MIMO sisytems.
 >
-> 24/1/2.18:51: fix bugs-modify $B$ to $BT^{-1}$ when passing that matrix to the recursion body.
+> 24/1/2.  18:51: fix bugs-modify $B$ to $BT^{-1}$ when passing that matrix to the recursion body.
+>
+> 24/1/15.21:56: Complete pole configuration under column exchange of input matrix.
+>
+> 24/1/17.11:10: fix bugs of using SVD to decompose a certain matrix during final exam.
+>
+> 24/1/18.14:01: New feature - we can place an MIMO system with random column combination of matrix B!
+>
+> 24/1/18.20:00: Sourcing.
 
 
 

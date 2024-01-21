@@ -1,18 +1,18 @@
 function K = myPoleSISOPlacement(A, B, poles)
     % Verify that the system is controllable, or poles is wrong or not.
 
-    controllabilityMatrix = ctrb(A,B)
-    r = rank(controllabilityMatrix)
-    n = size(A,1)
+    controllabilityMatrix = ctrb(A,B);
+    r = rank(controllabilityMatrix);
+    n = size(A,1);
     
     % if we failed to control:
     if r ~= n
         %[Abar, Bbar, Cbar, T, k] = ctrbf(A,B,C);
-        [T, A_c, B_c, A_uc, B_uc] = controllabilityDecomposition(A,B)
+        [T, A_c, B_c, A_uc, B_uc] = controllabilityDecomposition(A,B);
         %C_ = B';
         %[A_bar, B_bar, C_bar, T, k] = ctrbf(A,B,C_);
         
-        T
+        %T
         %A_bar
         %B_bar
         
@@ -37,7 +37,7 @@ function K = myPoleSISOPlacement(A, B, poles)
         % K = K(end:-1:1);
         %K = [zeros(n-r), K]
         %K =K*T;
-        K=K*inv(T)
+        K=K*inv(T);
     else
         K = myBasePolePlacement(A,B,poles);
     end
@@ -118,20 +118,4 @@ function [T, A_c, B_c, A_uc, B_uc] = controllabilityDecomposition(A, B)
     % Extract the submatrices for the uncontrollable part, if any
     A_uc = A_tilde(rankC+1:end, rankC+1:end);
     B_uc = B_tilde(rankC+1:end, :);
-    
-    % Output results
-    disp('Transformation Matrix T:');
-    disp(T);
-    
-    disp('Controllable A_c:');
-    disp(A_c);
-    
-    disp('Controllable B_c:');
-    disp(B_c);
-    
-    disp('Uncontrollable A_uc:');
-    disp(A_uc);
-    
-    disp('Uncontrollable B_uc:');
-    disp(B_uc);
 end
